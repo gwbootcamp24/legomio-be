@@ -79,6 +79,7 @@ export async function composeImage(req, res, next) {
     const head = await loadImage(`./${req.body.head}`);
     const body = await loadImage(`./${req.body.body}`);
     const legs = await loadImage(`./${req.body.legs}`);
+    const hands = await loadImage(`./img/hands.png`);
   
   // const logo = await loadImage(`./${req.identifier}-logo.jpg`);
 
@@ -88,33 +89,34 @@ export async function composeImage(req, res, next) {
   registerFont("./shortbaby2.ttf", { family: "ShortBaby" });
   // const canvas = createCanvas(width, 2 * height);
   const canvasWidth = 480;
-  const canvasHeight = 1200;
+  const canvasHeight = 1000;
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const context = canvas.getContext("2d");
 
   const logoPadding = 20;
   
   // context.drawImage(background, 0, 0, background.width, background.height);
-  context.drawImage(legs, 0, 440, legs.width, legs.height);
-  context.drawImage(body, 0, 200, body.width, body.height);
+  context.drawImage(legs, 0, 428, legs.width, legs.height);
+  context.drawImage(body, 0, 195, body.width, body.height);
   context.drawImage(head, 0, 0, head.width, head.height);
   context.drawImage(hair, 0, 0, hair.width, hair.height);
+  context.drawImage(hands, 0, 195, hair.width, hair.height);
 
   // context.drawImage(logo, width - logo.width - logoPadding + 400, height - logo.height - logoPadding);
 
 
-  const textPadding = 30;
-  context.font = "bold 70pt ShortBaby";
+  const textPadding = 80;
+  context.font = "bold 40pt ShortBaby";
   context.textAlign = "left";
   context.textBaseline = "top";
 
   const textSize = context.measureText(req.query.text);
   context.fillStyle = "rgba(255, 255, 255, 0.8)"
   // context.fillRect(0, 960, textSize.width + 2*textPadding, 200);
-  context.fillRect(0, canvasHeight - 200, canvasWidth, 200);
+  context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
 
   context.fillStyle = "#444";
-  context.fillText(req.query.text, textPadding, 2*textPadding);
+  context.fillText(req.query.text??'give me a name', textPadding, 920);
 
   const buffer = canvas.toBuffer("image/png");
   req.compositeImageBuffer = buffer;
