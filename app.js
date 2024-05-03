@@ -15,7 +15,7 @@ app.use(express.static('.'));
 
 app.use('/', appRouter);
 
-app.use('*', (req, res) => res.sendStatus(404));
+// app.use('*', (req, res) => res.sendStatus(404));
 
 
 export default app;
