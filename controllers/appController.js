@@ -74,12 +74,12 @@ export async function cleanupFiles(req, res, next) {console.log("req.identifier"
 export async function composeImage(req, res, next) {
   // todo try catch und async Handler
   try{
-    // const background = await loadImage(`./${req.body.background}`);
-    const hair = await loadImage(`./${req.body.hair}`);
-    const head = await loadImage(`./${req.body.head}`);
-    const body = await loadImage(`./${req.body.body}`);
-    const legs = await loadImage(`./${req.body.legs}`);
-    const hands = await loadImage(`./img/hands.png`);
+    const background = req.body.background? await loadImage(`./${req.body.background}`):'';
+    const hair = req.body.hair? await loadImage(`./${req.body.hair}`):'';
+    const head = req.body.head? await loadImage(`./${req.body.head}`):'';
+    const body = req.body.body? await loadImage(`./${req.body.body}`):'';
+    const legs = req.body.legs? await loadImage(`./${req.body.legs}`):'';
+    const hands = req.body.body? await loadImage(`./img/hands.png`):'';
   
   // const logo = await loadImage(`./${req.identifier}-logo.jpg`);
 
@@ -96,11 +96,12 @@ export async function composeImage(req, res, next) {
   const logoPadding = 20;
   
   // context.drawImage(background, 0, 0, background.width, background.height);
-  context.drawImage(legs, 0, 428, legs.width, legs.height);
-  context.drawImage(body, 0, 195, body.width, body.height);
-  context.drawImage(head, 0, 0, head.width, head.height);
-  context.drawImage(hair, 0, 0, hair.width, hair.height);
-  context.drawImage(hands, 0, 195, hair.width, hair.height);
+  if (background) context.drawImage(background, 0, 0, canvasWidth, canvasHeight);
+  if (legs) context.drawImage(legs, 0, 428, legs.width, legs.height);
+  if (body) context.drawImage(body, 0, 195, body.width, body.height);
+  if (hands) context.drawImage(hands, 0, 195, hair.width, hair.height);
+  if (head) context.drawImage(head, 0, 0, head.width, head.height);
+  if (hair) context.drawImage(hair, 0, 0, hair.width, hair.height);
 
   // context.drawImage(logo, width - logo.width - logoPadding + 400, height - logo.height - logoPadding);
 
