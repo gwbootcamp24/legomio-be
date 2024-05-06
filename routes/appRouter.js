@@ -1,8 +1,18 @@
 import { Router } from "express";
-import { getComposedImage } from '../controllers/appController.js';
+import { getAllData, validateRequest, composeImage, sendImage, cleanupFiles } from '../controllers/appController.js';
 
 const appRouter = Router();
 
-appRouter.route('/').get(getComposedImage)
+appRouter.route('/getall').post(getAllData)
+
+appRouter.route('/').post(
+  // validateRequest,
+  composeImage,
+  sendImage,
+  cleanupFiles
+)
 
 export default appRouter;
+
+
+// routen: ('getall').post
