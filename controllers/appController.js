@@ -11,7 +11,7 @@ export async function getComposedImage(req, res, next) {
 export async function getAllData(req, res, next) {
   try {
     const {rows: components} = await pool.query(
-      `SELECT id,type,url, ROW_NUMBER() OVER (
+      `SELECT id,type,url,url2, ROW_NUMBER() OVER (
       PARTITION BY type
       ORDER BY id DESC) 
       AS row_number 
@@ -29,22 +29,22 @@ export async function getAllData(req, res, next) {
 // Add the middleware function implementations below this line
 export function validateRequest(req, res, next) {
   console.log (req.body);
-  if (!req.query.background){
+  if (!req.body.background){
     return res.status(400).send("missing background");
   }
   // if (!req.query.logo){
   //   return res.status(400).send("missing logo");
   // }
-  if (!req.query.hair){
+  if (!req.body.hair){
     return res.status(400).send("missing hair");
   }    
-  if (!req.query.face){
+  if (!req.body.head){
     return res.status(400).send("missing face");
   }    
-  if (!req.query.body){
+  if (!req.body.body){
     return res.status(400).send("missing body");
   }
-  if (!req.query.pants){
+  if (!req.body.legs){
     return res.status(400).send("missing pants");
   }
 
@@ -80,7 +80,7 @@ export async function composeImage(req, res, next) {
     const body = req.body.body? await loadImage(`./${req.body.body}`):'';
     const legs = req.body.legs? await loadImage(`./${req.body.legs}`):'';
     const hands = req.body.body? await loadImage(`./img/hands.png`):'';
-  
+    const text = req.body.text;
   // const logo = await loadImage(`./${req.identifier}-logo.jpg`);
 
 
@@ -106,18 +106,50 @@ export async function composeImage(req, res, next) {
   // context.drawImage(logo, width - logo.width - logoPadding + 400, height - logo.height - logoPadding);
 
 
-  const textPadding = 80;
-  context.font = "bold 40pt ShortBaby";
-  context.textAlign = "left";
-  context.textBaseline = "top";
+  console.log("req.body",req.body)
 
-  const textSize = context.measureText(req.query.text);
-  context.fillStyle = "rgba(255, 255, 255, 0.8)"
-  // context.fillRect(0, 960, textSize.width + 2*textPadding, 200);
-  context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
 
-  context.fillStyle = "#444";
-  context.fillText(req.query.text??'give me a name', textPadding, 920);
+  if (text) {
+
+  
+    const textPadding = 20;
+    // context.font = "bold 40pt ShortBaby";
+    context.textAlign = "left";
+    context.textBaseline = "top";
+
+
+
+    context.fillStyle = "rgba(255, 255, 255, 0.8)"
+    // context.fillRect(0, 960, textSize.width + 2*textPadding, 200);
+    context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+
+    context.fillStyle = "#444";
+
+
+    fitTextOnCanvas(text, "ShortBaby", 920);
+
+
+    function fitTextOnCanvas(text, fontface, yPosition) {
+    
+      // start with a large font size
+      let fontsize = 46;
+      let textWidth;
+      // lower the font size until the text fits the canvas
+      do {
+        fontsize--;
+        context.font = fontsize + "px " + fontface;
+        textWidth = context.measureText(text).width; 
+      } while (textWidth > (canvas.width - 30))
+    
+      // draw the text (canvas.width/2) - (textWidth / 2)
+      context.fillText(text, (canvas.width/2) - (textWidth / 2), yPosition);
+    
+    
+    }
+  
+  }
+
+  // context.fillText(req.body.text??'give me a name', textPadding, 920);
 
   const buffer = canvas.toBuffer("image/png");
   req.compositeImageBuffer = buffer;
