@@ -4,9 +4,9 @@ import { createCanvas, loadImage, registerFont, Image } from 'canvas';
 // import axios, {isCancel, AxiosError} from 'axios';
 import * as fs from 'fs';
 import * as http from 'http'; 
+
 export async function getComposedImage(req, res, next) {
   console.log('getComposedImage');
-
 }
 
 export async function getAllData(req, res, next) {
@@ -17,7 +17,6 @@ export async function getAllData(req, res, next) {
       ORDER BY id DESC) 
       AS row_number 
       FROM components`);
-    // console.log('getAllData',components);
     res.json(components);
   } catch (error) {
     console.log(error);
@@ -58,7 +57,6 @@ export function validateRequest(req, res, next) {
 
 
 export async function sendImage(req, res, next) {
-  // console.log("sendImage",req.compositeImageBuffer);
   res.setHeader("Content-Type", "image/png");
   res.send(req.compositeImageBuffer);
   next();
@@ -135,6 +133,8 @@ export async function composeImage(req, res, next) {
     const body = req.body.body? await loadImage(`./${req.body.body}`):'';
     const legs = req.body.legs? await loadImage(`./${req.body.legs}`):'';
     const hands = req.body.body? await loadImage(`./img/hands.png`):'';
+    const brick = req.body.brick? await loadImage(`./${req.body.brick}`):'';
+    
     const text = req.body.text;
 
 
@@ -145,11 +145,13 @@ export async function composeImage(req, res, next) {
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const context = canvas.getContext("2d");
   const canvasXPos = canvas.width/2 - 240;
+  const brickYOffset = (req.body.brickSpacingVariant==1?650:req.body.brickSpacingVariant==2?550: req.body.brickSpacingVariant==3?450:650)
 
 
   const logoPadding = 20;
   console.log("BACKGROUND",background)
   if (background) context.drawImage(background, Math.floor(0.5*(-1 * background.width + canvasWidth)), Math.floor(0.5*(-1 * background.height + canvasHeight)), background.width, background.height);
+  if (brick) context.drawImage(brick, canvasXPos, brickYOffset, body.width, body.height);
   if (legs) context.drawImage(legs, canvasXPos, 428, legs.width, legs.height);
   if (body) context.drawImage(body, canvasXPos, 195, body.width, body.height);
   if (hands) context.drawImage(hands, canvasXPos, 195, hair.width, hair.height);
@@ -164,22 +166,20 @@ export async function composeImage(req, res, next) {
 
   if (text) {
 
-  
-    const textPadding = 20;
     // context.font = "bold 40pt ShortBaby";
     context.textAlign = "left";
     context.textBaseline = "top";
 
 
-
     context.fillStyle = "rgba(255, 255, 255, 0.8)"
-    // context.fillRect(0, 960, textSize.width + 2*textPadding, 200);
-    context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+    if (!brick) context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+    context.fillStyle = "#fff";
+    if (!brick) context.fillStyle = "#444";
+    let yPosition = brickYOffset + 250;
+    if (!brick) yPosition = 1000;
 
-    context.fillStyle = "#444";
 
-
-    fitTextOnCanvas(text, "ShortBaby", 920);
+    fitTextOnCanvas(text, "ShortBaby", yPosition);
 
 
     function fitTextOnCanvas(text, fontface, yPosition) {
