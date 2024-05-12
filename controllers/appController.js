@@ -28,7 +28,6 @@ export async function getAllData(req, res, next) {
  
 // Add the middleware function implementations below this line
 export function validateRequest(req, res, next) {
-  console.log (req.body);
   if (!req.body.background){
     return res.status(400).send("missing background");
   }
@@ -76,40 +75,45 @@ export async function composeImage(req, res, next) {
     
     let background
     
-    console.log("req.body.background",req.body.background);
+    // console.log("req.body.background",req.body);
 
-    if (req.body.background?.match('blob')){
+    if (req.body.base64data){
+      // console.log("base64data",req.body.base64data);
       // background = new Image(); // Create a new Image
       // background.src = req.body.background;
       // const background = req.body.background? await loadImage(Buffer.from(req.body.background).toString("base64")) :'';
-
-    async function savePhotoFromAPI() {
-
-
-      const res = await axios.get( req.body.background,
-         { responseType: "arraybuffer" }  //<--- ADDED THIS
-      );
-    
-
-
-      const response = await fetch(req.body.background);
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-
-      // const fileType = await FileType.fromBuffer(buffer);
-
-      // if (fileType.ext) {
-      if (1) {
-          const outputFileName = `yourfilenamehere.png`
-          fs.createWriteStream(outputFileName).write(buffer);
-      } else {
-          console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
+      const getImageData = async function (blob) {
+        const bitmap = await createImageBitmap(blob);
+        const { width, height } = bitmap;
+      
+        // an intermediate "buffer" 2D context is necessary
+        const ctx = DOM.context2d(width, height, 1);
+        ctx.drawImage(bitmap, 0, 0);
+      
+        return ctx.getImageData(0, 0, width, height);
       }
+      background = await loadImage(req.body.base64data);
 
-    }
+    // async function savePhotoFromAPI() {
+
+    //   const res = await axios.get( req.body.background,
+    //      { responseType: "arraybuffer" }  //<--- ADDED THIS
+    //   );
     
-    savePhotoFromAPI();
+    //   const response = await fetch(req.body.background);
+    //   const arrayBuffer = await response.arrayBuffer();
+    //   const buffer = Buffer.from(arrayBuffer);
+    //   // const fileType = await FileType.fromBuffer(buffer);
+    //   // if (fileType.ext) {
+    //   if (1) {
+    //       const outputFileName = `yourfilenamehere.png`
+    //       fs.createWriteStream(outputFileName).write(buffer);
+    //   } else {
+    //       console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
+    //   }
+    // }
+    // savePhotoFromAPI();
+
 
       // (async function() {
       //   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -149,7 +153,7 @@ export async function composeImage(req, res, next) {
 
 
   const logoPadding = 20;
-  console.log("BACKGROUND",background)
+  // console.log("BACKGROUND",background)
   if (background) context.drawImage(background, Math.floor(0.5*(-1 * background.width + canvasWidth)), Math.floor(0.5*(-1 * background.height + canvasHeight)), background.width, background.height);
   if (brick) context.drawImage(brick, canvasXPos, brickYOffset, body.width, body.height);
   if (legs) context.drawImage(legs, canvasXPos, 428, legs.width, legs.height);
@@ -161,7 +165,7 @@ export async function composeImage(req, res, next) {
   // context.drawImage(logo, width - logo.width - logoPadding + 400, height - logo.height - logoPadding);
 
 
-  console.log("req.body",req.body)
+  // console.log("req.body",req.body)
 
 
   if (text) {
