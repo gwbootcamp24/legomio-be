@@ -75,58 +75,8 @@ export async function composeImage(req, res, next) {
     
     let background
     
-    // console.log("req.body.background",req.body);
-
     if (req.body.base64data){
-      // console.log("base64data",req.body.base64data);
-      // background = new Image(); // Create a new Image
-      // background.src = req.body.background;
-      // const background = req.body.background? await loadImage(Buffer.from(req.body.background).toString("base64")) :'';
-      const getImageData = async function (blob) {
-        const bitmap = await createImageBitmap(blob);
-        const { width, height } = bitmap;
-      
-        // an intermediate "buffer" 2D context is necessary
-        const ctx = DOM.context2d(width, height, 1);
-        ctx.drawImage(bitmap, 0, 0);
-      
-        return ctx.getImageData(0, 0, width, height);
-      }
       background = await loadImage(req.body.base64data);
-
-    // async function savePhotoFromAPI() {
-
-    //   const res = await axios.get( req.body.background,
-    //      { responseType: "arraybuffer" }  //<--- ADDED THIS
-    //   );
-    
-    //   const response = await fetch(req.body.background);
-    //   const arrayBuffer = await response.arrayBuffer();
-    //   const buffer = Buffer.from(arrayBuffer);
-    //   // const fileType = await FileType.fromBuffer(buffer);
-    //   // if (fileType.ext) {
-    //   if (1) {
-    //       const outputFileName = `yourfilenamehere.png`
-    //       fs.createWriteStream(outputFileName).write(buffer);
-    //   } else {
-    //       console.log('File type could not be reliably determined! The binary data may be malformed! No file saved!')
-    //   }
-    // }
-    // savePhotoFromAPI();
-
-
-      // (async function() {
-      //   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-      //   console.log(1)
-      //   background =  await loadImage(req.body.background) ;
-      //   await sleep(1000)
-      //   console.log(2)
-      //   // background.src = req.body.background;
-      //   await sleep(1000)
-      //   console.log("background",background)
-      // })()
-
-
     } else {
       background = req.body.background? await loadImage(`./${req.body.background}`):'';
     }
@@ -149,7 +99,7 @@ export async function composeImage(req, res, next) {
   const canvas = createCanvas(canvasWidth, canvasHeight);
   const context = canvas.getContext("2d");
   const canvasXPos = canvas.width/2 - 240;
-  const brickYOffset = (req.body.brickSpacingVariant==1?615:req.body.brickSpacingVariant==2?550: req.body.brickSpacingVariant==3?450:650)
+  const brickYOffset = (req.body.brickSpacingVariant==1?615:req.body.brickSpacingVariant==2?563: req.body.brickSpacingVariant==3?493:650)
 
   // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
 //   function drawImageScaled(img, ctx) {
