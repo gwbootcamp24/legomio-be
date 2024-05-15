@@ -101,25 +101,13 @@ export async function composeImage(req, res, next) {
   const canvasXPos = canvas.width/2 - 240;
   const brickYOffset = (req.body.brickSpacingVariant==1?615:req.body.brickSpacingVariant==2?563: req.body.brickSpacingVariant==3?493:650)
 
-  // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
-//   function drawImageScaled(img, ctx) {
-//     var canvas = ctx.canvas ;
-//     var hRatio = canvas.width  / img.width    ;
-//     var vRatio =  canvas.height / img.height  ;
-//     var ratio  = Math.min ( hRatio, vRatio );
-//     var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
-//     var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
-//     ctx.clearRect(0,0,canvas.width, canvas.height);
-//     ctx.drawImage(img, 0,0, img.width, img.height,
-//                        centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
-//  }
   const logoPadding = 20;
   // console.log("BACKGROUND",background)
   if (background) context.drawImage(background, Math.floor(0.5*(-1 * background.width + canvasWidth)), Math.floor(0.5*(-1 * background.height + canvasHeight)), background.width, background.height);
   if (brick) context.drawImage(brick, canvasXPos - 110, brickYOffset + 30, body.width+ 220, body.height + 180 - 40);
   if (legs) context.drawImage(legs, canvasXPos, 428 + 30, legs.width, legs.height);
   if (body) context.drawImage(body, canvasXPos, 195 + 30, body.width, body.height);
-  if (hands) context.drawImage(hands, canvasXPos, 195 + 30, hair.width, hair.height);
+  if (hands) context.drawImage(hands, canvasXPos, 195 + 30, hands.width, hands.height);
   if (head) context.drawImage(head, canvasXPos, 0 + 30, head.width, head.height);
   if (hair) context.drawImage(hair, canvasXPos, 0 + 30, hair.width, hair.height);
 
@@ -138,9 +126,11 @@ export async function composeImage(req, res, next) {
 
     if (!brick){
       context.fillStyle = "rgba(255, 255, 255, 0.7)"
-      context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
-      context.fillStyle = (req.body?.fontColor!=='auto')?req.body?.fontColor:"#222";
 
+      // tbd: measure fontsize in fe (canvas), add banner BeforeUnloadEvent, fe (again)
+      // context.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+
+      context.fillStyle = (req.body?.fontColor!=='auto')?req.body?.fontColor:"#222";
     }
     else{
       context.fillStyle = (req.body?.fontColor!=='auto')?req.body?.fontColor:"#fff";
